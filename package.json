@@ -1,0 +1,42 @@
+{
+  "name": "monaco-emacs",
+  "version": "0.1.0",
+  "description": "",
+  "main": "./lib/index.js",
+  "typings": "./lib/monaco-emacs.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "webpack-dev-server --mode development --host=0.0.0.0 --port=8080",
+    "clean": "rm -rf lib dist local",
+    "typing": "dts-generator --name monaco-emacs --project ./ --out lib/monaco-emacs.d.ts",
+    "dist": "webpack --mode production",
+    "build": "npm run clean && tsc && npm run typing && npm run dist",
+    "local": "mkdir -p local && cp -r lib dist package.json local",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [],
+  "author": "Brijesh Bittu <brijesh@bitwiser.in>",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/lodash.throttle": "^4.1.4",
+    "@types/node": "^10.7.1",
+    "babel-core": "^6.26.3",
+    "babel-loader": "^7.1.5",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-preset-env": "^1.7.0",
+    "css-loader": "^1.0.0",
+    "dts-generator": "^2.1.0",
+    "html-webpack-plugin": "^3.2.0",
+    "monaco-editor-webpack-plugin": "^1.5.1",
+    "style-loader": "^0.22.1",
+    "ts-loader": "^4.4.2",
+    "typescript": "^3.0.1",
+    "webpack": "^4.16.5",
+    "webpack-cli": "^3.1.0",
+    "webpack-dev-server": "^3.1.5"
+  },
+  "dependencies": {
+    "lodash.throttle": "^4.1.1",
+    "monaco-editor": "^0.14.0"
+  }
+}

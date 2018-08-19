@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "outDir": "./lib/",
+    "noImplicitAny": false,
+    "module": "commonjs",
+    "target": "es6",
+    "allowJs": false,
+    "removeComments": true,
+    "rootDir": "./src/"
+  },
+  "exclude": [
+    "./src/demo.ts"
+  ]
+}
