@@ -31,6 +31,10 @@ export const COMMANDS: ICommandMapping = {
     description: '',
     action: 'editor.action.triggerSuggest',
   },
+  'C-\'': {
+    description: '',
+    action: 'editor.action.triggerSuggest',
+  },
   'M-;': {
     description: '',
     action: 'editor.action.commentLine',
@@ -67,6 +71,46 @@ export const COMMANDS: ICommandMapping = {
     description: '',
     action: 'editor.action.transformToLowercase',
   },
+  'C-v': {
+    description: '',
+    action: 'cursorPageDown',
+  },
+  'PageDown': {
+    description: '',
+    action: 'cursorPageDown',
+  },
+  'M-v': {
+    description: '',
+    action: 'cursorPageUp',
+  },
+  'PageUp': {
+    description: '',
+    action: 'cursorPageUp',
+  },
+  'M-g n': {
+    description: '',
+    action: 'editor.action.marker.next',
+  },
+  'M-g p': {
+    description: '',
+    action: 'editor.action.marker.prev',
+  },
+  'M-C-n': {
+    description: '',
+    action: 'editor.action.addSelectionToNextFindMatch',
+  },
+  'C-h': {
+    description: '',
+    action: 'deleteLeft',
+  },
+  'M-d': {
+    description: '',
+    action: 'deleteWordRight',
+  },
+  'S-C-': {
+    description: '',
+    action: 'editor.action.triggerParameterHints',
+  },
   'C-SPC': setMarkAction,
   'S-C-2': setMarkAction,
   'C-/': undoAction,
@@ -83,6 +127,7 @@ export const COMMANDS: ICommandMapping = {
   // 'Up': moveCursorUp,
   // 'Right': moveCursorRight,
   'C-b': moveCursorLeft,
+  'S-C-Backspace': new Actions.DeleteLines(),
   'M-f': new Actions.MoveCursorWordRight(),
   'M-b': new Actions.MoveCursorWordLeft(),
   'C-k': new Actions.KillLines(),
@@ -100,10 +145,15 @@ export const COMMANDS: ICommandMapping = {
   // instead of hardcoded Tab key
   'C-q Tab': new Actions.InsertTabs(),
   'M-r': new Actions.RotateCursorOnScreen(),
+  'M-g g': new Actions.GotoLine(),
   'M-g M-g': new Actions.GotoLine(),
   'C-x C-x': new Actions.InvertSelection(),
-  'S-M-.': new Actions.EndOfFile(),
-  'S-M-,': new Actions.TopOfFile(),
+  'S-M-.': new Actions.MoveCursorBottom(),
+  'S-M-,': new Actions.MoveCursorTop(),
+  'C-s': new Actions.Search(),
+  // Same as C-s. Not sure how to put Find/Replace in reverse mode
+  'C-r': new Actions.Search(),
+  'S-M-5': new Actions.SearchReplace(),
 };
 
 export function executeCommand(ext: EmacsExtension, command: EditorCommand, inputBuffer: string) {

@@ -20,7 +20,7 @@ const specialKeys: {[key: string]: string} = {
   DOT: '.',
   EQUAL: '=',
   MINUS: '-',
-  QUOTE: ',',
+  QUOTE: '\'',
   SEMICOLON: ';',
 };
 

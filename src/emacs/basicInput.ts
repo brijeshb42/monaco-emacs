@@ -177,6 +177,7 @@ export class BasicInputWidget implements monaco.IDisposable {
   }
 
   dispose(): void {
+    this.cleanup();
     this._input.removeEventListener('keydown', this.onKeyDown);
     this._input.removeEventListener('blur', this.onBlur);
     (document.head || document.body).removeChild(this._style);

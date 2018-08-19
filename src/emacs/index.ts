@@ -13,7 +13,7 @@ const {
 
 export class EmacsExtension implements monaco.IDisposable {
   private _editor: monaco.editor.IStandaloneCodeEditor;
-  private _subs: monaco.IDisposable[] = [];
+  private _disposables: monaco.IDisposable[] = [];
   private _inSelectionMode: boolean = false;
   private _changeDisposable: monaco.IDisposable = null;
   private _throttledScroll;
@@ -35,7 +35,7 @@ export class EmacsExtension implements monaco.IDisposable {
   }
 
   public start() {
-    if (this._subs.length) {
+    if (this._disposables.length) {
       return;
     }
 
@@ -57,9 +57,9 @@ export class EmacsExtension implements monaco.IDisposable {
   }
 
   private addListeners() {
-    this._subs.push(this._editor.onKeyDown(this.onKeyDown.bind(this)));
+    this._disposables.push(this._editor.onKeyDown(this.onKeyDown.bind(this)));
     this._throttledScroll = throttle(this.onEditorScroll.bind(this), 500);
-    this._subs.push(this._editor.onDidScrollChange(this._throttledScroll));
+    this._disposables.push(this._editor.onDidScrollChange(this._throttledScroll));
   }
 
   private cancelKey(ev: monaco.IKeyboardEvent) {
@@ -169,8 +169,8 @@ export class EmacsExtension implements monaco.IDisposable {
   }
 
   dispose(): void {
-    this._subs.forEach(d => d.dispose());
-    this._subs = [];
+    this._disposables.forEach(d => d.dispose());
+    this._disposables = undefined;
 
     if (this._changeDisposable) {
       this._changeDisposable.dispose();

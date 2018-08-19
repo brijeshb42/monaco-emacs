@@ -3,6 +3,12 @@ import * as monaco from 'monaco-editor';
 import { EmacsExtension } from './index';
 
 export const SOURCE = 'extension.emacs';
+interface IFindContribution extends monaco.editor.IEditorContribution {
+  start: (any) => any;
+  getState: () => {
+    change: (Object) => any;
+  };
+}
 
 function moveCursor(editor: monaco.editor.IStandaloneCodeEditor, hasSelection: boolean, direction: string, unit: string, repeat: number = 1) {
   const action = `cursor${unit === 'word' ? 'Word' : ''}${direction}${hasSelection ? 'Select': ''}`;
@@ -158,6 +164,14 @@ export class MoveCursorWordRight extends MoveCursorRight {
 
 export class MoveCursorWordLeft extends MoveCursorLeft {
   unit: string = 'word'
+}
+
+export class MoveCursorBottom extends MoveCursorAction {
+  direction = 'Bottom'
+}
+
+export class MoveCursorTop extends MoveCursorAction {
+  direction = 'Top'
 }
 
 export class KeyBoardQuit extends BaseAction {
@@ -355,25 +369,31 @@ export class InvertSelection extends BaseAction {
   }
 }
 
-export class TopOfFile extends BaseAction {
-  description = 'Goto top of file';
-  direction = -1;
+export class Search extends BaseAction {
+  showReplace = false;
 
   run(editor: monaco.editor.IStandaloneCodeEditor, ext: EmacsExtension, repeat: number): void {
-    let pos: monaco.Position;
-    if (this.direction === -1) {
-      pos = new monaco.Position(1, 1);
-    } else {
-      const model = editor.getModel();
-      const lastLine = model.getLineCount();
-      pos = new monaco.Position(lastLine, model.getLineLength(lastLine));
+    const findController = <IFindContribution>editor.getContribution('editor.contrib.findController');
+
+    if (findController) {
+      findController.start({
+        forceRevealReplace: this.showReplace,
+        seedSearchStringFromSelection: editor.getConfiguration().contribInfo.find.seedSearchStringFromSelection,
+        shouldFocus: 1,
+      });
     }
-    editor.setPosition(pos);
-    editor.revealPosition(pos);
   }
 }
 
-export class EndOfFile extends TopOfFile {
-  description = 'Goto bottom of file';
-  direction = 1;
+export class SearchReplace extends Search {
+  showReplace = true;
+}
+
+export class DeleteLines extends BaseAction {
+  run(editor: monaco.editor.IStandaloneCodeEditor, ext: EmacsExtension, repeat: number): void {
+    ext.selectionMode = false;
+    for(let i=0; i<repeat; i++) {
+      editor.trigger(SOURCE, 'editor.action.deleteLines', null);
+    }
+  }
 }
