@@ -1,6 +1,6 @@
 import * as monaco from 'monaco-editor';
 
-import { EmacsExtension, registerGlobalCommand } from './';
+import { EmacsExtension } from './';
 
 const editorNode = document.getElementById('editor');
 const statusNode = document.getElementById('status');

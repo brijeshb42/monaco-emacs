@@ -1,6 +1,14 @@
 const path = require('path');
+const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
+const package = require('./package.json');
+
+const banner = [
+  `${package.name}`,
+  `Version - ${package.version}`,
+  `Author - ${package.author}`,
+].join('\n');
 
 function getOutput(isProd = false) {
   const data = {
@@ -14,6 +22,7 @@ function getOutput(isProd = false) {
 
   data.libraryTarget = 'umd';
   data.library = 'MonacoEmacs';
+  data.globalObject = 'self';
   return data;
 }
 
@@ -52,7 +61,9 @@ module.exports = (env, argv) => {
         ],
       }],
     },
-    plugins: isProd ? [] : [
+    plugins: isProd ? [
+      new webpack.BannerPlugin(banner),
+    ] : [
       new HtmlWebpackPlugin({
         template: path.join(__dirname, './index.html'),
       }),

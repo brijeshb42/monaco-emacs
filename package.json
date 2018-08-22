@@ -15,7 +15,7 @@
     "prepublishOnly": "npm run build"
   },
   "keywords": [],
-  "author": "Brijesh Bittu <brijesh@bitwiser.in>",
+  "author": "Brijesh Bittu <brijesh@bitwiser.in> (http://bitwiser.in/)",
   "license": "MIT",
   "devDependencies": {
     "@types/lodash.throttle": "^4.1.4",

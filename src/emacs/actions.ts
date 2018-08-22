@@ -326,7 +326,12 @@ export class RotateCursorOnScreen extends BaseAction {
 
 
 export class GotoLine extends BaseAction {
-  run(editor: monaco.editor.IStandaloneCodeEditor, ext: EmacsExtension, repeat: number): void {
+  run(editor: monaco.editor.IStandaloneCodeEditor, ext: EmacsExtension): void {
+    // if (repeat <= 1) {
+    //   editor.trigger(SOURCE, 'editor.action.gotoLine', null);
+    //   return;
+    // }
+
     ext.getBasicInput('Goto Line: ').then(val => {
       let line = parseInt(val) || 0;
       const model = editor.getModel();
@@ -340,9 +345,21 @@ export class GotoLine extends BaseAction {
       }
 
       const pos = new monaco.Position(line, 1);
-      editor.setPosition(pos);
-      editor.revealPositionInCenter(pos);
-      editor.focus();
+      let range: monaco.Selection;
+
+      if (!ext.selectionMode) {
+        range = monaco.Selection.fromPositions(pos);
+      } else {
+        const sel = editor.getSelection();
+        if (sel.getDirection() === monaco.SelectionDirection.LTR) {
+          range = monaco.Selection.fromPositions(sel.getStartPosition(), pos);
+        } else {
+          range = monaco.Selection.fromPositions(sel.getEndPosition(), pos);
+        }
+      }
+
+      editor.setSelection(range);
+      editor.revealRangeInCenter(range);
     }).catch(() => {
       editor.focus();
     });
