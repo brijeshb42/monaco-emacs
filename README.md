@@ -1,5 +1,7 @@
 ## monaco-emacs
 
+[![npm version](https://badge.fury.io/js/monaco-emacs.svg)](https://www.npmjs.com/package/monaco-emacs)
+
 Emacs key bindings for monaco-editor. [Demo](https://editor.bitwiser.in).
 
 ### Installation
