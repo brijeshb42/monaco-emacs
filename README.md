@@ -12,10 +12,26 @@ npm install monaco-emacs
 
 ### Usage
 
+#### Webpack/Browserify
+
 ```js
 import * as monaco from 'monaco-editor';
 import { EmacsExtension } from 'monaco-emacs';
+```
 
+#### Browser
+
+* Add this script in your html - `https://unpkg.com/monaco-emacs/dist/monaco-emacs.js`.
+* The extension will be available as `MonacoEmacs` on `window`
+
+```js
+const monaco = window.monaco;
+const { EmacsExtension } = window.MonacoEmacs;
+```
+
+#### Code
+
+```js
 const editorNode = document.getElementById('editor');
 const statusNode = document.getElementById('statusbar');
 
