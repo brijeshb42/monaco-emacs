@@ -32,7 +32,7 @@ module.exports = (env, argv) => {
   return {
     target: 'web',
     entry: {
-      'monaco-editor': isProd ? './src/index.ts' : './src/demo.ts',
+      'monaco-emacs': isProd ? './src/index.ts' : './src/demo.ts',
     },
     output: getOutput(isProd),
     resolve: {
