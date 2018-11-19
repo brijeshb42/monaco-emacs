@@ -279,7 +279,11 @@ export class InsertTabs extends BaseAction {
     let text = '';
 
     for (let i=0; i < repeat; i++) {
-      text += (insertSpaces ? ' '.repeat(tabSize) : '\t');
+      let spaces = '';
+      for(let j=0; j<tabSize; j++) {
+        spaces += ' ';
+      }
+      text += (insertSpaces ? spaces : '\t');
     }
 
     editor.executeEdits(SOURCE, [{

@@ -31,11 +31,11 @@ export function monacoToEmacsKey(ev: monaco.IKeyboardEvent): string {
     return '';
   }
 
-  let key = ((keyName.startsWith('KEY_') || keyName.startsWith('NUMPAD_')) ? keyName[keyName.length - 1] : keyName);
+  let key = ((keyName.indexOf('KEY_') === 0 || keyName.indexOf('NUMPAD_') === 0) ? keyName[keyName.length - 1] : keyName);
 
-  if (keyName.endsWith('Arrow')) {
+  if (keyName.indexOf('Arrow') === (keyName.length - 'Arrow'.length)) {
     key = keyName.substr(0, keyName.length - 5);
-  } else if (keyName.startsWith('US_')) {
+  } else if (keyName.indexOf('US_') === 0) {
     key = specialKeys[keyName.substr(3)];
   } else if (specialKeys[keyName]) {
     key = specialKeys[key];
