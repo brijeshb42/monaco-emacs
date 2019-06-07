@@ -19,11 +19,11 @@ function moveCursor(editor: monaco.editor.IStandaloneCodeEditor, hasSelection: b
 
 export abstract class BaseAction {
   description: string = '';
-  abstract run(editor: monaco.editor.IStandaloneCodeEditor, ext: EmacsExtension, repeat: number): void;
+  abstract run(editor: monaco.editor.IStandaloneCodeEditor, ext: EmacsExtension, repeat: number, repeatedTrigger: boolean): void;
 }
 
 export class KillSelection extends BaseAction {
-  run(editor: monaco.editor.IStandaloneCodeEditor, ext: EmacsExtension): void {
+  run(editor: monaco.editor.IStandaloneCodeEditor, ext: EmacsExtension, repeat: number, repeatedTrigger: boolean): void {
     const selections = editor.getSelections();
 
     if (!selections.length) {
@@ -42,7 +42,7 @@ export class KillSelection extends BaseAction {
 }
 
 export class KillLines extends BaseAction {
-  run(editor: monaco.editor.IStandaloneCodeEditor, ext: EmacsExtension, repeat: number): void {
+  run(editor: monaco.editor.IStandaloneCodeEditor, ext: EmacsExtension, repeat: number, repeatedTrigger: boolean): void {
     ext.selectionMode = false;
     const model = editor.getModel();
     const pos = ext.getCursorAnchor();
@@ -52,7 +52,11 @@ export class KillLines extends BaseAction {
       const lineLength = model.getLineLength(pos.lineNumber);
       const isAtEnd = pos.column === lineLength + 1;
       if (!lineLength || isAtEnd) {
-        ext.state.addToRing(model.getEOL());
+      if (repeatedTrigger) {
+          ext.state.growRingTop(model.getEOL());
+        } else {
+          ext.state.addToRing(model.getEOL());
+        }
         editor.trigger(SOURCE, 'deleteAllRight', null);
         return;
       } else {
@@ -66,7 +70,12 @@ export class KillLines extends BaseAction {
 
     const range = monaco.Range.fromPositions(pos, endPos);
     console.log(range, repeat);
-    ext.state.addToRing(model.getValueInRange(range));
+
+    if (repeatedTrigger) {
+      ext.state.growRingTop(model.getValueInRange(range));
+    } else {
+      ext.state.addToRing(model.getValueInRange(range));
+    }
 
     editor.executeEdits(SOURCE, [{
       range,
@@ -77,7 +86,7 @@ export class KillLines extends BaseAction {
 }
 
 export class InsertLineBelow extends BaseAction {
-  run(editor: monaco.editor.IStandaloneCodeEditor, ext: EmacsExtension, repeat: number): void {
+  run(editor: monaco.editor.IStandaloneCodeEditor, ext: EmacsExtension, repeat: number, repeatedTrigger: boolean): void {
     const pos = editor.getPosition();
     editor.trigger(SOURCE, 'editor.action.insertLineAfter', null);
     editor.setPosition(pos);
@@ -85,7 +94,7 @@ export class InsertLineBelow extends BaseAction {
 }
 
 export class InsertLineAfter extends BaseAction {
-  run(editor: monaco.editor.IStandaloneCodeEditor, ext: EmacsExtension, repeat: number): void {
+  run(editor: monaco.editor.IStandaloneCodeEditor, ext: EmacsExtension, repeat: number, repeatedTrigger: boolean): void {
     let text = '';
     for(let i=0; i<repeat; i++) {
       text += editor.getModel().getEOL();
@@ -102,7 +111,7 @@ export class InsertLineAfter extends BaseAction {
 }
 
 export class SetMark extends BaseAction {
-  run(editor: monaco.editor.IStandaloneCodeEditor, ext: EmacsExtension): void {
+  run(editor: monaco.editor.IStandaloneCodeEditor, ext: EmacsExtension, repeat: number, repeatedTrigger: boolean): void {
     const mode = ext.selectionMode;
     const sel = editor.getSelection();
     const selEmpty = sel.isEmpty();
@@ -129,7 +138,7 @@ class MoveCursorAction extends BaseAction {
   direction: string;
   unit: string = 'char';
 
-  run(editor: monaco.editor.IStandaloneCodeEditor, ext: EmacsExtension, repeat: number): void {
+  run(editor: monaco.editor.IStandaloneCodeEditor, ext: EmacsExtension, repeat: number, repeatedTrigger: boolean): void {
     moveCursor(editor, ext.selectionMode, this.direction, this.unit, repeat);
   }
 }
@@ -175,7 +184,7 @@ export class MoveCursorTop extends MoveCursorAction {
 }
 
 export class KeyBoardQuit extends BaseAction {
-  run(editor: monaco.editor.IStandaloneCodeEditor, ext: EmacsExtension): void {
+  run(editor: monaco.editor.IStandaloneCodeEditor, ext: EmacsExtension, repeat: number, repeatedTrigger: boolean): void {
     ext.selectionMode = false;
     ext.clearState();
     editor.setPosition(editor.getPosition());
@@ -184,7 +193,7 @@ export class KeyBoardQuit extends BaseAction {
 
 class HistoryAction extends BaseAction {
   action: string;
-  run(editor: monaco.editor.IStandaloneCodeEditor, ext: EmacsExtension, repeat: number): void {
+  run(editor: monaco.editor.IStandaloneCodeEditor, ext: EmacsExtension, repeat: number, repeatedTrigger: boolean): void {
     for(let i = 0; i < repeat; i++) {
       editor.trigger(SOURCE, this.action, null);
     }
@@ -200,7 +209,7 @@ export class RedoAction extends HistoryAction {
 }
 
 export class Yank extends BaseAction {
-  run(editor: monaco.editor.IStandaloneCodeEditor, ext: EmacsExtension, repeat: number): void {
+  run(editor: monaco.editor.IStandaloneCodeEditor, ext: EmacsExtension, repeat: number, repeatedTrigger: boolean): void {
     const text = ext.state.getFromRing(repeat);
     if (!text) {
       return;
@@ -216,7 +225,7 @@ export class Yank extends BaseAction {
 }
 
 export class YankSelectionToRing extends BaseAction {
-  run(editor: monaco.editor.IStandaloneCodeEditor, ext: EmacsExtension, repeat: number): void {
+  run(editor: monaco.editor.IStandaloneCodeEditor, ext: EmacsExtension, repeat: number, repeatedTrigger: boolean): void {
     const sel = editor.getSelection();
     if (sel.isEmpty()) {
       return;
@@ -231,7 +240,7 @@ export class YankSelectionToRing extends BaseAction {
 
 
 export class YankRotate extends BaseAction {
-  run(editor: monaco.editor.IStandaloneCodeEditor, ext: EmacsExtension, repeat: number): void {
+  run(editor: monaco.editor.IStandaloneCodeEditor, ext: EmacsExtension, repeat: number, repeatedTrigger: boolean): void {
     const text = ext.state.popFromRing();
 
     if (!text) {
@@ -249,7 +258,7 @@ export class YankRotate extends BaseAction {
 
 export class RevealEditorAction extends BaseAction {
   revealFunction: string;
-  run(editor: monaco.editor.IStandaloneCodeEditor, ext: EmacsExtension, repeat: number): void {
+  run(editor: monaco.editor.IStandaloneCodeEditor, ext: EmacsExtension, repeat: number, repeatedTrigger: boolean): void {
     const sel = editor.getSelection();
 
     if (this.revealFunction === 'up') {
@@ -273,7 +282,7 @@ export class RevealToBottomAction extends RevealEditorAction {
 }
 
 export class InsertTabs extends BaseAction {
-  run(editor: monaco.editor.IStandaloneCodeEditor, ext: EmacsExtension, repeat: number): void {
+  run(editor: monaco.editor.IStandaloneCodeEditor, ext: EmacsExtension, repeat: number, repeatedTrigger: boolean): void {
     const model = editor.getModel();
     const { tabSize, insertSpaces } = model.getOptions();
     let text = '';
@@ -295,7 +304,7 @@ export class InsertTabs extends BaseAction {
 }
 
 export class RotateCursorOnScreen extends BaseAction {
-  run(editor: monaco.editor.IStandaloneCodeEditor, ext: EmacsExtension, repeat: number): void {
+  run(editor: monaco.editor.IStandaloneCodeEditor, ext: EmacsExtension, repeat: number, repeatedTrigger: boolean): void {
     const ranges = editor.getVisibleRanges();
 
     if (!ranges.length) {
@@ -330,7 +339,7 @@ export class RotateCursorOnScreen extends BaseAction {
 
 
 export class GotoLine extends BaseAction {
-  run(editor: monaco.editor.IStandaloneCodeEditor, ext: EmacsExtension): void {
+  run(editor: monaco.editor.IStandaloneCodeEditor, ext: EmacsExtension, repeat: number, repeatedTrigger: boolean): void {
     // if (repeat <= 1) {
     //   editor.trigger(SOURCE, 'editor.action.gotoLine', null);
     //   return;
@@ -371,7 +380,7 @@ export class GotoLine extends BaseAction {
 }
 
 export class InvertSelection extends BaseAction {
-  run(editor: monaco.editor.IStandaloneCodeEditor, ext: EmacsExtension, repeat: number): void {
+  run(editor: monaco.editor.IStandaloneCodeEditor, ext: EmacsExtension, repeat: number, repeatedTrigger: boolean): void {
     const sel = editor.getSelection();
 
     if (sel.isEmpty()) {
@@ -393,7 +402,7 @@ export class InvertSelection extends BaseAction {
 export class Search extends BaseAction {
   showReplace = false;
 
-  run(editor: monaco.editor.IStandaloneCodeEditor, ext: EmacsExtension, repeat: number): void {
+  run(editor: monaco.editor.IStandaloneCodeEditor, ext: EmacsExtension, repeat: number, repeatedTrigger: boolean): void {
     const findController = <IFindContribution>editor.getContribution('editor.contrib.findController');
 
     if (findController) {
@@ -411,7 +420,7 @@ export class SearchReplace extends Search {
 }
 
 export class DeleteLines extends BaseAction {
-  run(editor: monaco.editor.IStandaloneCodeEditor, ext: EmacsExtension, repeat: number): void {
+  run(editor: monaco.editor.IStandaloneCodeEditor, ext: EmacsExtension, repeat: number, repeatedTrigger: boolean): void {
     ext.selectionMode = false;
     for(let i=0; i<repeat; i++) {
       editor.trigger(SOURCE, 'editor.action.deleteLines', null);

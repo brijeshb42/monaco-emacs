@@ -9,6 +9,7 @@ export class State {
   private _inputBuffer: string;
   private _lastInputBuffer: string;
   private _killRing: string[] = [];
+  private _lastCommandKey: string;
 
   public updateAndGetKey(key: string): string {
     if (key === 'C-g' && (this._inargumentMode || this._prefixKey)) {
@@ -29,6 +30,14 @@ export class State {
     } else {
       return `${this._prefixKey} ${key}`
     }
+  }
+
+  public setLastCommandKey(lastCommandKey: string) {
+    this._lastCommandKey = lastCommandKey;
+  }
+
+  public isLastCommandKey(lastCommandKey: string): boolean {
+    return this._lastCommandKey == lastCommandKey;
   }
 
   private resetState(setLastInput: boolean = false) {
@@ -77,8 +86,8 @@ export class State {
   public growRingTop(str: string) {
     if (!this._killRing.length) {
       this.addToRing(str);
-      this._killRing[this._killRing.length - 1] += str;
     }
+    this._killRing[this._killRing.length - 1] += str;
   }
 
   public getFromRing(n?: number) {
