@@ -69,7 +69,6 @@ export class KillLines extends BaseAction {
     }
 
     const range = monaco.Range.fromPositions(pos, endPos);
-    console.log(range, repeat);
 
     if (repeatedTrigger) {
       ext.state.growRingTop(model.getValueInRange(range));
