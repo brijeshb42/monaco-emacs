@@ -40,26 +40,16 @@ module.exports = (env, argv) => {
     },
     module: {
       rules: [{
-        test: /\.js$/,
-        exclude: /node_modules/,
-        use: {
-          loader: 'babel-loader',
-          options: {
-            compact: false,
-          },
-        },
-      }, {
         test: /\.tsx?$/,
         exclude: /node_modules/,
         use: 'ts-loader',
-      }, {
-        test: /\.css$/,
-        // exclude: /node_modules/,
+      }].concat(!isProd ? [{
+        test: /\.css?$/,
         use: [
           'style-loader',
           'css-loader',
         ],
-      }],
+      }] : []),
     },
     plugins: isProd ? [
       new webpack.BannerPlugin(banner),

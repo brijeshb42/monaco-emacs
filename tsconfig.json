@@ -9,6 +9,8 @@
     "declaration": true,
     "rootDir": "./src/",
     "lib": ["es2015", "dom"],
+    "strictNullChecks": false,
+    "strictPropertyInitialization": false
   },
   "exclude": [
     "./src/demo.ts"
