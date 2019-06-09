@@ -6,6 +6,7 @@
     "target": "es5",
     "allowJs": false,
     "removeComments": true,
+    "declaration": true,
     "rootDir": "./src/",
     "lib": ["es2015", "dom"],
   },

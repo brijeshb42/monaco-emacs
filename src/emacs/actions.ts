@@ -52,7 +52,7 @@ export class KillLines extends BaseAction {
       const lineLength = model.getLineLength(pos.lineNumber);
       const isAtEnd = pos.column === lineLength + 1;
       if (!lineLength || isAtEnd) {
-      if (repeatedTrigger) {
+        if (repeatedTrigger) {
           ext.state.growRingTop(model.getEOL());
         } else {
           ext.state.addToRing(model.getEOL());
@@ -118,7 +118,7 @@ export class SetMark extends BaseAction {
 
     if (!selEmpty) {
       const dir = sel.getDirection();
-      
+
       if (dir === monaco.SelectionDirection.LTR) {
         editor.setSelection(monaco.Selection.fromPositions(sel.getEndPosition(), sel.getEndPosition()));
       } else {
