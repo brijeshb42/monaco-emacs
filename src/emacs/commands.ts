@@ -5,7 +5,7 @@ import { EmacsExtension } from './';
 export type EditorCommand = {
   action?: string | string[],
   description?: string,
-  run?: (editor: monaco.editor.IStandaloneCodeEditor, extension: EmacsExtension, repeat: number) => void,
+  run?: (editor: monaco.editor.IStandaloneCodeEditor, extension: EmacsExtension, repeat: number, repeatedTrigger: boolean) => void,
 };
 
 export interface ICommandMapping {
@@ -54,6 +54,10 @@ export const COMMANDS: ICommandMapping = {
   'C-Backspace': {
     description: '',
     action: 'deleteWordLeft',
+  },
+  'C-d': {
+    description: '',
+    action: 'deleteRight',
   },
   'M-Backspace': {
     description: '',
@@ -156,11 +160,11 @@ export const COMMANDS: ICommandMapping = {
   'S-M-5': new Actions.SearchReplace(),
 };
 
-export function executeCommand(ext: EmacsExtension, command: EditorCommand, inputBuffer: string) {
+export function executeCommand(ext: EmacsExtension, command: EditorCommand, inputBuffer: string, repeatedTrigger: boolean) {
   const editor = ext.getEditor();
   const repeat = parseInt(inputBuffer) || 1;
   if (command.run) {
-    command.run(editor, ext, repeat);
+    command.run(editor, ext, repeat, repeatedTrigger);
     return;
   }
 
