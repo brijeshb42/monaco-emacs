@@ -99,7 +99,6 @@ export class EmacsExtension implements monaco.IDisposable {
 
     this.cancelKey(ev);
     const repeatedTrigger = this._state.isLastCommandKey(key);
-    console.log(repeatedTrigger);
     executeCommand(this, command, this._state.getInputBuffer(), repeatedTrigger);
     // Track the last key handled for commands like Ctrl-K that have different
     // side effects if they are repeated.
