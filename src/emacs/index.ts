@@ -72,6 +72,12 @@ export class EmacsExtension implements monaco.IDisposable {
    * and it is the entry point for all key presses.
    */
   private onKeyDown(ev: monaco.IKeyboardEvent) {
+    // Allow previously registered keydown listeners to handle the event and
+    // prevent this extension from also handling it.
+    if (ev.browserEvent.defaultPrevented) {
+      return;
+    }
+
     let key = monacoToEmacsKey(ev);
 
     if (!key) {
