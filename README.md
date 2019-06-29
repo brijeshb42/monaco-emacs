@@ -49,6 +49,22 @@ emacsMode.start();
 emacsMode.dispose();
 ```
 
+#### Unregister default keys
+
+```js
+import { unregisterKey } from 'monaco-emacs';
+
+unregisterKey('Tab');
+```
+
+#### Get all available mappings
+
+```js
+import { getAllMappings } from 'monaco-emacs';
+
+console.log(getAllMappings());
+```
+
 #### AMD
 
 If you are following the official guide and integrating the AMD version of `monaco-editor`, you can follow this -

@@ -185,6 +185,12 @@ export function registerGlobalCommand(key: string, command: EditorCommand) {
   COMMANDS[key] = command;
 }
 
+export function unregisterKey(key: string) {
+  if (COMMANDS[key]) {
+    delete COMMANDS[key];
+  }
+}
+
 export function getAllMappings(): {[key: string]: string} {
   const result: {[key: string]: string} = {};
   Object.keys(COMMANDS).forEach(key => {
