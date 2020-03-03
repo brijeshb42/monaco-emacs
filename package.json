@@ -1,6 +1,6 @@
 {
   "name": "monaco-emacs",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Emacs keybindings for monaco-editor",
   "main": "./lib/index.js",
   "typings": "./lib/index.d.ts",
@@ -22,7 +22,7 @@
     "@types/node": "^10.7.1",
     "css-loader": "^1.0.0",
     "html-webpack-plugin": "^3.2.0",
-    "monaco-editor": "0.15.5",
+    "monaco-editor": "0.20.0",
     "monaco-editor-webpack-plugin": "^1.5.1",
     "style-loader": "^0.22.1",
     "ts-loader": "^6.0.2",
@@ -35,6 +35,6 @@
     "lodash.throttle": "^4.1.1"
   },
   "peerDependencies": {
-    "monaco-editor": "^0.14.0 || ^0.15.0"
+    "monaco-editor": "^0.14.0 || ^0.15.0 || ^0.20.0"
   }
 }

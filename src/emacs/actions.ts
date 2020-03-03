@@ -1,6 +1,6 @@
 import * as monaco from 'monaco-editor';
 
-import { EmacsExtension } from './index';
+import { EmacsExtension, getConfiguration } from './index';
 
 export const SOURCE = 'extension.emacs';
 interface IFindContribution extends monaco.editor.IEditorContribution {
@@ -407,7 +407,7 @@ export class Search extends BaseAction {
     if (findController) {
       findController.start({
         forceRevealReplace: this.showReplace,
-        seedSearchStringFromSelection: editor.getConfiguration().contribInfo.find.seedSearchStringFromSelection,
+        seedSearchStringFromSelection: getConfiguration(editor).seedSearchStringFromSelection,
         shouldFocus: 1,
       });
     }

@@ -17,8 +17,8 @@ export class EmacsExtension implements monaco.IDisposable {
   private _inSelectionMode: boolean = false;
   private _changeDisposable: monaco.IDisposable = null;
   private _throttledScroll;
-  private _intialCursorType: string;
-  private _intialCursorBlinking: string;
+  private _intialCursorType: CursorStyle;
+  private _intialCursorBlinking: CursorBlinking;
   private _basicInputWidget: BasicInputWidget;
   private _state: State = new State();
   private _onDidMarkChange: Emitter<boolean> = new Emitter<boolean>();
@@ -28,9 +28,9 @@ export class EmacsExtension implements monaco.IDisposable {
 
   constructor(editor: monaco.editor.IStandaloneCodeEditor) {
     this._editor = editor;
-    const config = editor.getConfiguration().viewInfo;
-    this._intialCursorType = TextEditorCursorStyle[config.cursorStyle].toLowerCase();
-    this._intialCursorBlinking = TextEditorCursorBlinkingStyle[config.cursorBlinking].toLowerCase();
+    const config = getConfiguration(editor);
+    this._intialCursorType = config.cursorStyle;
+    this._intialCursorBlinking = config.cursorBlinking;
     this._basicInputWidget = new BasicInputWidget();
   }
 
@@ -41,8 +41,8 @@ export class EmacsExtension implements monaco.IDisposable {
 
     this.addListeners();
     this._editor.updateOptions({
-      cursorStyle: TextEditorCursorStyle[TextEditorCursorStyle.Block].toLowerCase(),
-      cursorBlinking: TextEditorCursorBlinkingStyle[TextEditorCursorBlinkingStyle.Blink].toLowerCase(),
+      cursorStyle: TextEditorCursorStyle[TextEditorCursorStyle.Block].toLowerCase() as CursorStyle,
+      cursorBlinking: TextEditorCursorBlinkingStyle[TextEditorCursorBlinkingStyle.Blink].toLowerCase() as CursorBlinking,
     });
 
     this._editor.addOverlayWidget(this._basicInputWidget);
@@ -200,4 +200,39 @@ export class EmacsExtension implements monaco.IDisposable {
     this._throttledScroll.cancel();
     this._state = null;
   }
+}
+
+type CursorStyle = 'line' | 'block' | 'underline' | 'line-thin' | 'block-outline' | 'underline-thin';
+type CursorBlinking = 'blink' | 'smooth' | 'phase' | 'expand' | 'solid';
+
+interface Configuration {
+  readonly seedSearchStringFromSelection: boolean;
+  readonly cursorStyle: CursorStyle;
+  readonly cursorBlinking: CursorBlinking;
+}
+
+
+export function getConfiguration(editor: monaco.editor.IStandaloneCodeEditor): Configuration {
+  // Support for Monaco < 0.19.0
+  if (typeof editor['getConfiguration'] === 'function') {
+    const config = editor['getConfiguration']().viewInfo;
+    return {
+      seedSearchStringFromSelection: config.contribInfo.find.seedSearchStringFromSelection,
+      cursorStyle: TextEditorCursorStyle[config.cursorStyle].toLowerCase() as CursorStyle,
+      cursorBlinking: TextEditorCursorBlinkingStyle[config.cursorBlinking].toLowerCase() as CursorBlinking,
+    };
+  }
+
+  const rawOptions = editor.getRawOptions();
+  let seedSearchStringFromSelection = true;
+  const find = rawOptions.find;
+  if (find && find.seedSearchStringFromSelection != null) {
+    seedSearchStringFromSelection = find.seedSearchStringFromSelection;
+  }
+
+  return {
+    seedSearchStringFromSelection,
+    cursorStyle: rawOptions.cursorStyle || 'line',
+    cursorBlinking: rawOptions.cursorBlinking || 'blink',
+  };
 }
