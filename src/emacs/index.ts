@@ -1,10 +1,20 @@
 import * as monaco from 'monaco-editor';
 import throttle =  require('lodash.throttle');
+import kebabCase =  require('lodash.kebabcase');
 
 import { COMMANDS, executeCommand } from './commands';
 import { monacoToEmacsKey, Emitter } from './util';
 import { BasicInputWidget } from './basicInput';
 import { State, EAT_UP_KEY } from './state';
+
+type CursorStyle = 'line' | 'block' | 'underline' | 'line-thin' | 'block-outline' | 'underline-thin';
+type CursorBlinking = 'blink' | 'smooth' | 'phase' | 'expand' | 'solid';
+
+interface Configuration {
+  readonly seedSearchStringFromSelection: boolean;
+  readonly cursorStyle: CursorStyle;
+  readonly cursorBlinking: CursorBlinking;
+}
 
 const {
   TextEditorCursorBlinkingStyle,
@@ -41,8 +51,8 @@ export class EmacsExtension implements monaco.IDisposable {
 
     this.addListeners();
     this._editor.updateOptions({
-      cursorStyle: TextEditorCursorStyle[TextEditorCursorStyle.Block].toLowerCase() as CursorStyle,
-      cursorBlinking: TextEditorCursorBlinkingStyle[TextEditorCursorBlinkingStyle.Blink].toLowerCase() as CursorBlinking,
+      cursorStyle: kebabCase(TextEditorCursorStyle[TextEditorCursorStyle.Block]) as CursorStyle,
+      cursorBlinking: kebabCase(TextEditorCursorBlinkingStyle[TextEditorCursorBlinkingStyle.Blink]) as CursorBlinking,
     });
 
     this._editor.addOverlayWidget(this._basicInputWidget);
@@ -202,16 +212,6 @@ export class EmacsExtension implements monaco.IDisposable {
   }
 }
 
-type CursorStyle = 'line' | 'block' | 'underline' | 'line-thin' | 'block-outline' | 'underline-thin';
-type CursorBlinking = 'blink' | 'smooth' | 'phase' | 'expand' | 'solid';
-
-interface Configuration {
-  readonly seedSearchStringFromSelection: boolean;
-  readonly cursorStyle: CursorStyle;
-  readonly cursorBlinking: CursorBlinking;
-}
-
-
 export function getConfiguration(editor: monaco.editor.IStandaloneCodeEditor): Configuration {
   // Support for Monaco < 0.19.0
   if (typeof editor['getConfiguration'] === 'function') {
@@ -223,16 +223,13 @@ export function getConfiguration(editor: monaco.editor.IStandaloneCodeEditor): C
     };
   }
 
-  const rawOptions = editor.getRawOptions();
-  let seedSearchStringFromSelection = true;
-  const find = rawOptions.find;
-  if (find && find.seedSearchStringFromSelection != null) {
-    seedSearchStringFromSelection = find.seedSearchStringFromSelection;
-  }
+  const findOptions = editor.getOption(monaco.editor.EditorOption.find);
+  const cursorStyle = editor.getOption(monaco.editor.EditorOption.cursorStyle);
+  const cursorBlinking = editor.getOption(monaco.editor.EditorOption.cursorBlinking);
 
   return {
-    seedSearchStringFromSelection,
-    cursorStyle: rawOptions.cursorStyle || 'line',
-    cursorBlinking: rawOptions.cursorBlinking || 'blink',
+    seedSearchStringFromSelection: findOptions.seedSearchStringFromSelection,
+    cursorStyle: kebabCase(TextEditorCursorStyle[cursorStyle]) as CursorStyle,
+    cursorBlinking: kebabCase(TextEditorCursorBlinkingStyle[cursorBlinking]) as CursorBlinking,
   };
 }

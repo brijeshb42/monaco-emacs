@@ -43,6 +43,9 @@ module.exports = (env, argv) => {
         test: /\.tsx?$/,
         exclude: /node_modules/,
         use: 'ts-loader',
+      }, {
+        test: /\.ttf$/,
+        use: 'file-loader',
       }].concat(!isProd ? [{
         test: /\.css?$/,
         use: [
