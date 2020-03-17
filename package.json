@@ -1,6 +1,6 @@
 {
   "name": "monaco-emacs",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Emacs keybindings for monaco-editor",
   "main": "./lib/index.js",
   "typings": "./lib/index.d.ts",
