@@ -215,11 +215,12 @@ export class EmacsExtension implements monaco.IDisposable {
 export function getConfiguration(editor: monaco.editor.IStandaloneCodeEditor): Configuration {
   // Support for Monaco < 0.19.0
   if (typeof editor['getConfiguration'] === 'function') {
-    const config = editor['getConfiguration']().viewInfo;
+    const { viewInfo, contribInfo } = editor['getConfiguration']();
+
     return {
-      seedSearchStringFromSelection: config.contribInfo.find.seedSearchStringFromSelection,
-      cursorStyle: TextEditorCursorStyle[config.cursorStyle].toLowerCase() as CursorStyle,
-      cursorBlinking: TextEditorCursorBlinkingStyle[config.cursorBlinking].toLowerCase() as CursorBlinking,
+      seedSearchStringFromSelection: contribInfo.find.seedSearchStringFromSelection,
+      cursorStyle: TextEditorCursorStyle[viewInfo.cursorStyle].toLowerCase() as CursorStyle,
+      cursorBlinking: TextEditorCursorBlinkingStyle[viewInfo.cursorBlinking].toLowerCase() as CursorBlinking,
     };
   }
 
