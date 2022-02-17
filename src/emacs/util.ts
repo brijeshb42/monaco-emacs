@@ -33,7 +33,7 @@ export function monacoToEmacsKey(ev: monaco.IKeyboardEvent): string {
 
   let key = ((keyName.indexOf('KEY_') === 0 || keyName.indexOf('NUMPAD_') === 0) ? keyName[keyName.length - 1] : keyName);
 
-  if (keyName.indexOf('Arrow') === (keyName.length - 'Arrow'.length)) {
+  if (keyName.endsWith('Arrow')) {
     key = keyName.substr(0, keyName.length - 5);
   } else if (keyName.indexOf('US_') === 0) {
     key = specialKeys[keyName.substr(3)];
