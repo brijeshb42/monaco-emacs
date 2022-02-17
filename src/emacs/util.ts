@@ -24,6 +24,8 @@ const specialKeys: {[key: string]: string} = {
   SEMICOLON: ';',
 };
 
+const oneCharKeyPrefixes = ['KEY_', 'NUMPAD_']
+
 export function monacoToEmacsKey(ev: monaco.IKeyboardEvent): string {
   const keyName = monaco.KeyCode[ev.keyCode];
   if (modifierKeys[keyName]) {
@@ -31,7 +33,7 @@ export function monacoToEmacsKey(ev: monaco.IKeyboardEvent): string {
     return '';
   }
 
-  let key = ((keyName.indexOf('KEY_') === 0 || keyName.indexOf('NUMPAD_') === 0) ? keyName[keyName.length - 1] : keyName);
+  let key = oneCharKeyPrefixes.some(prefix => keyName.startsWith(prefix)) ? keyName[keyName.length - 1] : keyName;
 
   if (keyName.endsWith('Arrow')) {
     key = keyName.substr(0, keyName.length - 5);
