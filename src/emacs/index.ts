@@ -11,7 +11,7 @@ type CursorStyle = 'line' | 'block' | 'underline' | 'line-thin' | 'block-outline
 type CursorBlinking = 'blink' | 'smooth' | 'phase' | 'expand' | 'solid';
 
 interface Configuration {
-  readonly seedSearchStringFromSelection: boolean;
+  readonly seedSearchStringFromSelection: monaco.editor.IEditorFindOptions['seedSearchStringFromSelection'];
   readonly cursorStyle: CursorStyle;
   readonly cursorBlinking: CursorBlinking;
 }
