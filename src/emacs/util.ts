@@ -24,7 +24,7 @@ const specialKeys: {[key: string]: string} = {
   SEMICOLON: ';',
 };
 
-const oneCharKeyPrefixes = ['KEY_', 'NUMPAD_']
+const oneCharKeyPrefixes = ['Key', 'Numpad']
 
 export function monacoToEmacsKey(ev: monaco.IKeyboardEvent): string {
   const keyName = monaco.KeyCode[ev.keyCode];
