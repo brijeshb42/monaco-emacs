@@ -1,14 +1,8 @@
 import * as monaco from 'monaco-editor';
 
-import { EmacsExtension, getConfiguration } from './index';
+import { EmacsExtension } from './index';
 
 export const SOURCE = 'extension.emacs';
-interface IFindContribution extends monaco.editor.IEditorContribution {
-  start: (any) => any;
-  getState: () => {
-    change: (Object) => any;
-  };
-}
 
 function moveCursor(editor: monaco.editor.IStandaloneCodeEditor, hasSelection: boolean, direction: string, unit: string, repeat: number = 1) {
   const action = `cursor${unit === 'word' ? 'Word' : ''}${direction}${hasSelection ? 'Select': ''}`;
@@ -20,6 +14,19 @@ function moveCursor(editor: monaco.editor.IStandaloneCodeEditor, hasSelection: b
 export abstract class BaseAction {
   description: string = '';
   abstract run(editor: monaco.editor.IStandaloneCodeEditor, ext: EmacsExtension, repeat: number, repeatedTrigger: boolean): void;
+}
+
+class TriggerAction extends BaseAction {
+  trigger: string
+
+  constructor(trigger: string) {
+    super()
+    this.trigger = trigger
+  }
+
+  run(editor: monaco.editor.IStandaloneCodeEditor) {
+    editor.trigger(SOURCE, this.trigger, {})
+  }
 }
 
 export class KillSelection extends BaseAction {
@@ -398,24 +405,16 @@ export class InvertSelection extends BaseAction {
   }
 }
 
-export class Search extends BaseAction {
-  showReplace = false;
-
-  run(editor: monaco.editor.IStandaloneCodeEditor, ext: EmacsExtension, repeat: number, repeatedTrigger: boolean): void {
-    const findController = <IFindContribution>editor.getContribution('editor.contrib.findController');
-
-    if (findController) {
-      findController.start({
-        forceRevealReplace: this.showReplace,
-        seedSearchStringFromSelection: getConfiguration(editor).seedSearchStringFromSelection,
-        shouldFocus: 1,
-      });
-    }
+export class Search extends TriggerAction {
+  constructor() {
+    super('editor.actions.findWithArgs')
   }
 }
 
-export class SearchReplace extends Search {
-  showReplace = true;
+export class SearchReplace extends TriggerAction {
+  constructor() {
+    super('editor.action.startFindReplaceAction')
+  }
 }
 
 export class DeleteLines extends BaseAction {

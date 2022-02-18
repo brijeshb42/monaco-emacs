@@ -11,7 +11,6 @@ type CursorStyle = 'line' | 'block' | 'underline' | 'line-thin' | 'block-outline
 type CursorBlinking = 'blink' | 'smooth' | 'phase' | 'expand' | 'solid';
 
 interface Configuration {
-  readonly seedSearchStringFromSelection: monaco.editor.IEditorFindOptions['seedSearchStringFromSelection'];
   readonly cursorStyle: CursorStyle;
   readonly cursorBlinking: CursorBlinking;
 }
@@ -213,13 +212,10 @@ export class EmacsExtension implements monaco.IDisposable {
 }
 
 export function getConfiguration(editor: monaco.editor.IStandaloneCodeEditor): Configuration {
-
-  const findOptions = editor.getOption(monaco.editor.EditorOption.find);
   const cursorStyle = editor.getOption(monaco.editor.EditorOption.cursorStyle);
   const cursorBlinking = editor.getOption(monaco.editor.EditorOption.cursorBlinking);
 
   return {
-    seedSearchStringFromSelection: findOptions.seedSearchStringFromSelection,
     cursorStyle: kebabCase(TextEditorCursorStyle[cursorStyle]) as CursorStyle,
     cursorBlinking: kebabCase(TextEditorCursorBlinkingStyle[cursorBlinking]) as CursorBlinking,
   };
