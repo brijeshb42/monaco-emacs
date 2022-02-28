@@ -41,11 +41,11 @@ export const COMMANDS: ICommandMapping = {
   },
   'C-t': {
     description: '',
-    action: 'editor.action.transpose',
+    action: 'editor.action.transposeLetters',
   },
   'C-x C-p': {
     description: '',
-    action: 'selectAll',
+    action: 'editor.action.selectAll',
   },
   'Tab': {
     description: '',

@@ -8,41 +8,39 @@ export const modifierKeys: {[key: string]: string} = {
   Shift: 'S',
 };
 
-const specialKeys: {[key: string]: string} = {
+const specialKeys: Record<string, string> = {
   Enter: 'Return',
   Space: 'SPC',
-  BACKSLASH: '\\',
-  SLASH: '/',
-  BACKTICK: '`',
-  CLOSE_SQUARE_BRACKET: ']',
-  OPEN_SQUARE_BRACKET: '[',
-  COMMA: ',',
-  DOT: '.',
-  EQUAL: '=',
-  MINUS: '-',
-  QUOTE: '\'',
-  SEMICOLON: ';',
+  Backslash: '\\',
+  Slash: '/',
+  Backquote: '`',
+  BracketRight: ']',
+  BracketLeft: '[',
+  Comma: ',',
+  Period: '.',
+  Equal: '=',
+  Minus: '-',
+  Quote: '\'',
+  Semicolon: ';',
 };
 
 const oneCharKeyPrefixes = ['Key', 'Numpad']
+const arrowSuffix = 'Arrow'
 
 export function monacoToEmacsKey(ev: monaco.IKeyboardEvent): string {
   const keyName = monaco.KeyCode[ev.keyCode];
   if (modifierKeys[keyName]) {
-    // return modifierKeys[keyName];
     return '';
   }
 
   let key = oneCharKeyPrefixes.some(prefix => keyName.startsWith(prefix)) ? keyName[keyName.length - 1] : keyName;
 
-  if (keyName.endsWith('Arrow')) {
-    key = keyName.substr(0, keyName.length - 5);
-  } else if (keyName.indexOf('US_') === 0) {
-    key = specialKeys[keyName.substr(3)];
+  if (keyName.endsWith(arrowSuffix)) {
+    key = keyName.substring(0, keyName.length - arrowSuffix.length);
   } else if (specialKeys[keyName]) {
     key = specialKeys[key];
   }
-  
+
   if (key.length === 1) {
     key = key.toLowerCase();
   }
